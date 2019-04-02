@@ -1,0 +1,196 @@
+\documentclass[11pt,letterpaper,english]{article}
+
+% Page design
+\usepackage[top=1in, bottom=1in, left=1in, right=1in] {geometry}
+\pagestyle{empty}
+
+% General packages
+\usepackage[T1]{fontenc}
+%\usepackage{txfonts}
+\usepackage{xcolor}
+%\usepackage{eqnarray}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\usepackage{mathptmx}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{setspace}
+\newcommand{\verbatimfont}[1]{\renewcommand{\verbatim@font}{\ttfamily#1}}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{color}
+\usepackage{multirow}
+\usepackage{floatrow}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{hhline}
+\setlength\doublerulesep{.7pt}
+%\usepackage{tabularx}
+\usepackage{subcaption}
+
+% Section format
+\usepackage{sectsty}
+\sectionfont{\normalsize}
+\subsectionfont{\normalsize}
+\subsubsectionfont{\normalsize \it}
+\usepackage{titlesec}
+\setlength{\parskip}{\baselineskip}
+\setlength{\parindent}{0pt}
+
+\titlespacing\section{0pt}{0\parskip}{0\parskip}
+\titlespacing\subsection{0pt}{0\parskip}{0\parskip}
+\titlespacing\subsubsection{0pt}{0\parskip}{0\parskip}
+\titleformat{\section}[block]{\normalfont\normalsize\bfseries}{\thesection .}{1em}{}
+\titleformat{\subsection}[block]{\normalfont\normalsize\bfseries}{\thesubsection .}{1em}{}
+\titleformat{\subsubsection}[block]{\normalfont\normalsize\bfseries}{\thesubsubsection .}{1em}{}
+
+
+% Bibliography format
+
+\usepackage[hidelinks]{hyperref}
+\usepackage[numbers]{natbib}
+\usepackage{doi}
+\renewcommand{\refname}{REFERENCES}
+\makeatletter
+\renewcommand\@biblabel[1]{#1.\em}
+\makeatother
+\setlength{\bibsep}{0pt plus 0.3ex}
+
+% Captions
+\usepackage{caption}
+\captionsetup[figure]{labelfont={bf,normalsize},textfont={bf,normalsize},labelformat={default},labelsep=period,name={Figure}}
+
+% Tables
+\floatsetup[table]{capposition=top}
+\captionsetup[table]{labelfont={bf,normalsize},textfont={bf,normalsize},labelformat={default},labelsep=period,name={Table}}
+\renewcommand{\thetable}{\Roman{table}}
+\captionsetup[sub]{font={normalsize},labelfont={bf,normalsize}}
+
+% UDF
+\definecolor{brown}{RGB}{74,68,42}
+\newcommand{\tw}[1]{#1\textwidth}
+\newcommand{\lw}{\linewidth}
+\renewcommand{\eqref}[1]{(\ref{#1})}
+
+\raggedright
+
+\begin{document}
+\vspace*{-0.45in}
+\begin{center}
+{\Large\centering\bf TOWARD THE DIRECT NUMERICAL SIMULATION OF A 5X5 ROD BUNDLE }
+
+\vspace{3pt}
+
+{\bf \large Elia Merzari, Thomas Noordine and Oana Marin} \\
+\large Argonne National Laboratory \\
+\large 9700 S. Cass Avenue, Lemont IL 60439, USA \\
+{\color{brown} emerzari@anl.gov,  tnorddine@anl.gov, oanam@mcs.anl.gov}
+
+\vspace{3pt}
+
+{\bf \large Sofiane Benahmadouche} \\
+\large  Electricite de France \\
+\large 78401 Chatou Cedex, France \\
+{\color{brown}  sofiane.benhamadouche@edf.fr}
+
+\end{center}
+
+
+
+\normalsize
+
+\section*{ABSTRACT}
+
+Rod bundle flows are prevalent in nuclear engineering for both light water reactors (LWR) and advanced reactor concepts. Unlike canonical channel flow the flow in rod bundles presents some unique characteristic that have evaluate over decades of  experimental and numerical research. Among the most interesting characteristics of rod bundles versus canonical flows is certainly the inhomogeneous cross section which can present different local conditions of turbulence as well as the presence of localized effects characteristics of external flows.
+Despite the widespread presence of rod-bundle flows and the decades of knowledge acquired in this field, there are no publicly available direct numerical simulations (DNS) of the flow in multiple-pin rod bundles with heat transfer. In fact, there is only little data available for single-pin infinite-lattice bundles, which are of limited in practical applications as wall effects in the cross section are always important. A multiple-pin DNS study is of great value to the engineering community  as it would allow for the assessment of the reliability of various turbulence models in the presence of heat transfer. Moreover such simulation would provide an invaluable source of data for a deeper understanding of the flow physics.
+In this work we present work toward the direct numerical simulation of the flow in a 5 by 5 rod bundle representative of LWR fuel. We consider standard configurations as well as configurations where the central pin is removed and replaced with a guide thimble. The thimble is larger in diameter than the pin and contributed to adding greatly to the non-uniformity of the flow in the cross section. We perform simulations in Code\_Saturne to design the numerical DNS experiment to be performed ith the open source spectral element code Nek5000. Large Eddy Simulations are also performed in Nek5000 to confirm that the resolution requirements are adequate,   We also analyze the anisotropy of the Reynolds stress tensor and compare results from Code\_Saturne and Nek5000.
+
+\begin{flushright}
+{\bf KEYWORDS} \\
+Rod bundle, LES, DNS, Nek5000
+\end{flushright}
+
+\section{INTRODUCTION}
+
+Rod bundles are an essential component of most nuclear reactors concepts. Th external flow over arrays of cylindrical rods is therefore of great interest to nuclear engineers and reactor designers. The prediction of the temperature distribution within the rod bundle is of particular importance. Unlike in canonical channel flow, the flow in rod bundles presents some unique characteristic that have evaluate over decades of  experimental and numerical research. Among the most interesting characteristics of rod bundles versus canonical flows is certainly the inhomogeneous cross section which can present different local conditions of turbulence as well as the presence of localized effects characteristics of external flows.
+Historically, System codes and subchannel codes have been extensively used in the thermal-hydraulic analysis of reactor fuel assemblies, but they are limited by the need of empirical correlations derived from representative experimental results over a range of parameters.
+Computational Fluid Dynamics (CFD) has emerged in the last two decades as a promising solution to predict flow and heat transfer in rod bundles.
+Industry relies routinely on Reynolds Averaged Navier-Stokes (RANS) approaches to predict the flow in rod bundles with LWR spacer grids. The simulation of wire-wrapped rod bundles has also been an active topic of research. RANS retains some limitations due to the need to provide closure relationships and beenfit from comparison with turbulence resolving techniques.Such High fidelity techniques, including direct numerical simulations (DNS) or highly resolved large eddy simulations (LES), allow for an accurate computation of the flow and heat transfer phenomena in nuclear assemblies, without the need of empirical correlations. Their cost however scales with the Reynolds number and remain prohibitive for realistic geometries.
+We note that despite the wealth of literature available on rod bundles, there are no publicly available direct numerical simulations (DNS) of the flow in multiple-pin rod bundles with heat transfer. In fact, there is only little data available for single-pin infinite-lattice bundles, which are of limited in practical applications as wall effects in the cross section are always important. A multiple-pin DNS study is of great value to the engineering community  as it would allow for the assessment of the reliability of various turbulence models in the presence of heat transfer. Moreover such simulation would provide an invaluable source of data for a deeper understanding of the flow physics.
+In this work we present work toward the direct numerical simulation of the flow in a 5 by 5 rod bundle representative of LWR fuel. We consider standard configurations as well as configurations where the central pin is removed and replaced with a guide thimble. The thimble is larger in diameter than the pin and contributed to adding greatly to the non-uniformity of the flow in the cross section. We perform simulations in Code\_Saturne to design the numerical DNS experiment to be performed with the open source spectral element code Nek5000. Large Eddy Simulations are also performed in Nek5000 to confirm that the resolution requirements are adequate,   We also analyze the anisotropy of the Reynolds stress tensor and compare results from Code\_Saturne and Nek5000.
+The numerical methods are summarized in Section~\ref{methods}. The results from Code\_Saturne used for the design of the numerical experiment are summarized in Section~\ref{results_saturne} while numerical results for Nek5000 are summarized in Section~\ref{results_nek5000}. Finally a discussion is provided in Section~\ref{discussion}.
+
+\section{METHODS}
+\label{methods}
+
+Let us consider the velocity (Eq. \eqref{UEqn}), continuity (Eq. \eqref{rhoEqn}) and energy (Eq. \eqref{EEqn}) equations, that describe incompressible flow of a Newtonian fluid in the absence of other body or external forces.
+\begin{equation}
+\frac{\partial  u_i  }{\partial t} +  \frac{\partial}{\partial x_j} \left( u_i u_j \right) =-\frac{1}{\rho} \frac{\partial p}{\partial x_i} + \frac{\partial}{\partial x_j} \left[ \nu \left( \frac{\partial u_i}{\partial x_j} +\frac{\partial u_j}{\partial x_i} \right) \right]
+\label{UEqn}
+\end{equation}
+\begin{equation}
+\frac{\partial u_i}{\partial x_i} = 0
+\label{rhoEqn}
+\end{equation}
+\begin{equation}
+\rho c_p \left( \frac{\partial T }{\partial t} + u_j \frac{\partial T}{\partial x_j} \right) = \frac{\partial }{\partial x_j} \left( \lambda \frac{\partial T}{\partial x_j} \right)
+\label{EEqn}
+\end{equation}
+where $\rho$ is the constant density of the fluid, $\nu$ represents the kinematic viscosity, $\lambda$ is the thermal conductivity and $c_p$ the heat capacity. Implicit summation applies. Let us also note here, that if the fluid viscosity does not depend on temperature (a valid assumption for the cases that are considered for the proposed methodology), velocity equations are completely uncoupled to the temperature field. For the sake of simplicity, thermal conductivity and the heat capacity will also be considered constant. Using the Reynolds averaging operator, one may divide instantaneous fields in an average part (time average for statistically steady flows) and a fluctuating part (i.e. $u_i = \overline{u}_i+u_i'$). When this is applied to NS equations, the RANS equations are obtained (Eqs. \eqref{UEqnRANS}, \eqref{rhoEqnRANS} and \eqref{EEqnRANS}).
+\begin{equation}
+\frac{\partial  \overline{u}_i  }{\partial t} +  \frac{\partial}{\partial x_j} \left( \overline{u}_i \overline{u}_j \right) =-\frac{1}{\rho} \frac{\partial \overline{p}}{\partial x_i} + \frac{\partial}{\partial x_j} \left[ \nu \left( \frac{\partial \overline{u}_i}{\partial x_j} +\frac{\partial \overline{u}_j}{\partial x_i} \right) \right] + \frac{\partial}{\partial x_j }\left( -\overline{u_i' u_j'} \right)
+\label{UEqnRANS}
+\end{equation}
+\begin{equation}
+\frac{\partial \overline{u}_i}{\partial x_i} = 0
+\label{rhoEqnRANS}
+\end{equation}
+\begin{equation}
+ \frac{\partial \overline{T} }{\partial t} + \overline{u}_j \frac{\partial \overline{T}}{\partial x_j}  = \frac{\partial }{\partial x_j} \left( \alpha \frac{\partial \overline{T}}{\partial x_j} \right) +\frac{\partial}{\partial x_j} \left( -\overline{u_j' T'}\right)
+\label{EEqnRANS}
+\end{equation}
+where constant density and heat capacity have been absorbed in the thermal diffusivity ($\alpha = \lambda / (\rho c_p)$). The additional terms that appear in velocity and energy equations represent respectively the Reynolds stress tensor ($-\overline{u_i' u_j'} $) and the turbulent heat fluxes ($ -\overline{u_j' T'}$). Different closures for those terms lead to the variety of RANS and turbulent heat fluxes models available in literature.
+
+\subsection{Code_Saturne}
+
+\subsection{Nek5000}
+The LES simulations have been performed with the high-order spectral element code Nek5000 \cite{fischer2002}. the planned DNS calculations will also be performed with Nek5000. The Spectral Element Method (SEM), introduced by Patera \cite{patera1984} is a subclass of the Galerkin methods. SEM combines the geometric flexibility of finite elements with the minimal numerical dispersion and dissipation of spectral methods, making it well suited for DNS and highly resolved LES computations of simple to complex geometries. The domain is discretized into $E$ curvilinear hexahedral elements, in which the solution is represented as a tensor-product of $N^{th}$-order Lagrange polynomials based on the Gauss-Lobatto-Legendre (GLL) nodal points, leading to a total of $n\approx E (N+1)^3$ degrees or freedom per scalar field. Nek5000 was designed from the outset for distributed-memory platforms. It is highly parallel and has been recently applied to a variety of problems to gain unprecedented insight into the physics of turbulence in complex flows \cite{obabko2015}. Time-stepping is semi-implicit: the viscous terms of the NS equations are treated implicitly (for the current simulations a second-order backward differentiation has been used,  BDF2), while non-linear terms are treated by a third order extrapolation (EXT3) scheme. The main bottleneck of these computations is the resolution of the elliptic problem for the governing pressure. The discrete Poisson equation is solved using a variational multigrid GMRES method with $local$ overlapping Schwarz methods for element-based smoothing at resolution $N$ and $\approx N/2$, coupled with a $global$ coarse-grid problem based on linear elements \cite{fischer2005}. The LES formulation relies on explicit filtering \cite{slotz2005} of modes $k=N-1$ and $k=N$, which provides an energy drain at the unresolved grid scale, similar to deconvolution LES models. For the presented LES simulations 1\% filtering of the last mode has been used. For well-resolved regions, the action of the filter is void and spectral accuracy is retained.
+
+\section{DESIGN OF THE NUMERICAL EXPERIMENT}
+\label{results_saturne}
+
+\subsection{Computational domain and physical conditions}
+
+\subsection{Mesh characteristics and mesh convergence study}
+
+\subsection{Results}
+
+\section{LARGE EDDY SIMULATION}
+\label{results_nek5000}
+
+\subsection{Mesh characteristics}
+
+\subsection{Results}
+
+\section{DISCUSSION}
+\label{discussion}
+
+\section{CONCLUSIONS}
+
+%\bibliographystyle{ieeetr}
+\bibliographystyle{nureth18new}
+%\bibliographystyle{ans}
+%\bibliographystyle{plainnat}
+%\bibliographystyle{abbrv}
+\bibliography{references}
+
+\begin{center}
+\scriptsize
+\framebox{\parbox{2.6in}{The submitted manuscript has been created by UChicago Argonne, LLC, Operator of Argonne National Laboratory
+("Argonne").  Argonne, a U.S. Department of Energy Office of Science laboratory, is operated under Contract No. DE-AC02-06CH11357.  The U.S. Government retains for itself, and others acting on its behalf, a paid-up, nonexclusive, irrevocable worldwide license in said article to reproduce, prepare derivative works, distribute copies to the public, and perform publicly and display publicly, by or on behalf of the Government.}}
+\normalsize
+\end{center}
+
+
+\end{document}
