@@ -29,6 +29,10 @@
 %\usepackage{tabularx}
 \usepackage{subcaption}
 
+%\usepackage{csmacros}
+\usepackage{dsfont}
+%\input{csvers.tex}
+
 % Section format
 \usepackage{sectsty}
 \sectionfont{\normalsize}
@@ -153,6 +157,63 @@ where $\rho$ is the constant density of the fluid, $\nu$ represents the kinemati
 where constant density and heat capacity have been absorbed in the thermal diffusivity ($\alpha = \lambda / (\rho c_p)$). The additional terms that appear in velocity and energy equations represent respectively the Reynolds stress tensor ($-\overline{u_i' u_j'} $) and the turbulent heat fluxes ($ -\overline{u_j' T'}$). Different closures for those terms lead to the variety of RANS and turbulent heat fluxes models available in literature.
 
 \subsection{Code\_Saturne}
+
+Pseudo 2D calculation have been performed with the open source finite volume code Code\_Saturne to estimate the Taylor microscale ( $ \lambda = \sqrt{\frac{15 k \nu}{\epsilon}} $) and the Kolmogorov scale( $ \eta = (\frac{\nu^{3}}{\epsilon})^{\frac{1}{4}}$). The results have been used to design the LES and DNS numerical experiments with Nek5000, the mesh has been designed so that the distance between GLL points is smaller than min($\frac{\lambda}{2}$,$\eta$).
+
+An Elliptic Blending Reynold's stress model\cite{manceau2002} has been used, the following set of coupled equations has been solved : 
+
+%\begin{equation}
+%  \frac{\partial R_{ij}}{\partial t} + u_{k}\frac{\partial R_{ij}}{\partial x_{k}} = d_{ij} + P_{ij} + G_{ij} + \Phi_{ij} - \epsilon_{ij}
+%\end{equation}
+
+\begin{equation}
+\begin{split}
+  \frac{\partial R_{ij}}{\partial t} + u_{k}\frac{\partial R_{ij}}{\partial x_{k}} = & -\rho ( R_{ij}S_{ji} + R_{ij}S_{ij} ) - C_{s} \frac{\partial}{\partial x_{k}}( \rho\frac{k}{\epsilon} R_{km}\frac{\partial R_{ij}}{\partial x_{m}}) \\ 
+  & + (1-\alpha^{3})(\Phi_{ij}^{w} -\epsilon_{ij}^{w}) + \alpha^{3}(\Phi_{ij}^{h} - \epsilon_{ij}^{h})
+\end{split}
+\end{equation}
+
+The main idea of the EBRSM is to get the correct wall assymptotic behavior for the pressure correlation term $\underline{\underline{\Phi}}$ and represent the blocking of the wall normal fluctuations. This model is based on the Durbin's blending approcach
+The elliptic blending functions $f_{\Phi}$ and $f_{\epsilon}$ have been set equal to $\alpha^{3}$, which are the default values in Code\_Saturne.
+
+
+%\begin{equation}
+%  p_{ij} = -\rho ( R_{ij}S{ji} + R_{ij}S{ij} )
+%\end{equation}
+%\begin{equation}
+%  d_{ij} = - C_{s} \frac{\partial}{\partial x_{k}}( \rho\frac{k}{\epsilon} R_{km}\frac{\partial R_{ij}}{\partial x_{m}})
+%\end{equation}
+%\begin{equation}
+%  \epsilon_{ij} = (1-Ak\alpha)\epsilon_{ij}^{w} + Ak\alpha*\epsilon_{ij}^{h}
+%\end{equation}
+%\begin{equation}
+%  \underline{\underline{\Phi}} = (1-Ak\alpha)\underline{\underline{\Phi}}^{w} + Ak\alpha*\underline{\underline{\Phi}}^{h}
+%  \Phi_{ij} = (1-Ak\alpha)\Phi_{ij}^{w} + Ak\alpha*\Phi_{ij}^{h}
+%\end{equation}
+
+\begin{equation}
+%  \underline{\underline{\epsilon}}^{w} = \frac{\overline{\underline{\underline{R}}}}{k}\epsilon \text{ and } \underline{\underline{\epsilon}}^{h} = \frac{2}{3} \epsilon \underline{\underline{\mathds{1}}}
+  \epsilon_{ij}^{w} = \frac{\overline{R}_{ij}}{k}\epsilon \text{ and } \epsilon_{ij}^{h} =\frac{2}{3} \epsilon \delta_{ij}
+\end{equation}
+
+\begin{equation}
+%  \underline{\underline{\epsilon}}^{w} = \frac{\overline{\underline{\underline{R}}}}{k}\epsilon \text{ and } \underline{\underline{\epsilon}}^{h} = \frac{2}{3} \epsilon \underline{\underline{\mathds{1}}}
+  \Phi_{ij}^{w} = -5.0 \frac{\epsilon}{k} (R_{ik}n_{j}n_{k} + R_{jk} n_{i} n_{k} - \frac{1}{2} (R_{kl}n_{k}n_{l}n_{i}n_{j}-R_{kl}n_{k}n_{l}\delta_{ij})) 
+\end{equation}
+\begin{equation}
+%  \Phi_{ij}^{h} = -C_{1}\frac{\epsilon}{k}(R_{ij}-\frac{2}{3}k\delta_{ij}) - C_{2}(P_{ij} - \frac{2}{3}P_{kk}\delta_{ij}) 
+  \Phi_{ij}^{h} = -C_{1}\epsilon a_{ij} -C_{2}P_{k}a_{ij} + (C_{3} - C_{3}'\sqrt{a_{kl}a_{kl}})k S_{ij} + C_{4}k(a_{ik}S_{jk} + a_{jk}S_{ik} - \frac{2}{3} a_{kl} S_{kl} \delta_{ij}) + C_{5}k(a_{ik}W_{jk} + a_{jk}W_{ik})%+ C_{1}\epsilon(a_{ik}a_{kj}- \frac{1}{3}A_{2}\delta_{ij})
+\end{equation}
+
+The elliptic blending factor,$\alpha$ is solution of the following elliptic equation :
+\begin{equation}
+  \alpha - L^{2} \nabla^{2} \alpha = \frac{1}{k} 
+\end{equation}
+and $n_{i} = \frac{(\nabla \alpha)_{i}}{||(\underline{\nabla} \alpha)||}$, the unit normal of the $\alpha$ gradient
+
+This the EBRSM is a near wall model, $y^{+} = 0.5$ and $x^{+} = 3.5$ have been targeted and checked a posteriori.
+
+
 
 \subsection{Nek5000}
 The LES simulations have been performed with the high-order spectral element code Nek5000 \cite{fischer2002}. the planned DNS calculations will also be performed with Nek5000. The Spectral Element Method (SEM), introduced by Patera \cite{patera1984} is a subclass of the Galerkin methods. SEM combines the geometric flexibility of finite elements with the minimal numerical dispersion and dissipation of spectral methods, making it well suited for DNS and highly resolved LES computations of simple to complex geometries. The domain is discretized into $E$ curvilinear hexahedral elements, in which the solution is represented as a tensor-product of $N^{th}$-order Lagrange polynomials based on the Gauss-Lobatto-Legendre (GLL) nodal points, leading to a total of $n\approx E (N+1)^3$ degrees or freedom per scalar field. Nek5000 was designed from the outset for distributed-memory platforms. It is highly parallel and has been recently applied to a variety of problems to gain unprecedented insight into the physics of turbulence in complex flows \cite{obabko2015}. Time-stepping is semi-implicit: the viscous terms of the NS equations are treated implicitly (for the current simulations a second-order backward differentiation has been used,  BDF2), while non-linear terms are treated by a third order extrapolation (EXT3) scheme. The main bottleneck of these computations is the resolution of the elliptic problem for the governing pressure. The discrete Poisson equation is solved using a variational multigrid GMRES method with $local$ overlapping Schwarz methods for element-based smoothing at resolution $N$ and $\approx N/2$, coupled with a $global$ coarse-grid problem based on linear elements \cite{fischer2005}. The LES formulation relies on explicit filtering \cite{slotz2005} of modes $k=N-1$ and $k=N$, which provides an energy drain at the unresolved grid scale, similar to deconvolution LES models. For the presented LES simulations 1\% filtering of the last mode has been used. For well-resolved regions, the action of the filter is void and spectral accuracy is retained.
