@@ -158,9 +158,9 @@ where constant density and heat capacity have been absorbed in the thermal diffu
 
 \subsection{Code\_Saturne}
 
-Pseudo 2D calculation have been performed with the open source finite volume code Code\_Saturne to estimate the Taylor microscale ( $ \lambda = \sqrt{\frac{15 k \nu}{\epsilon}} $) and the Kolmogorov scale( $ \eta = (\frac{\nu^{3}}{\epsilon})^{\frac{1}{4}}$). The results have been used to design the LES and DNS numerical experiments with Nek5000, the mesh has been designed so that the distance between GLL points is smaller than min($\frac{\lambda}{2}$,$\eta$).
+Pseudo 2D calculation have been performed with the open source finite volume code Code\_Saturne to estimate the Taylor microscale ( $ \lambda = \sqrt{\frac{15 k \nu}{\epsilon}} $) and the Kolmogorov scale( $ \eta = (\frac{\nu^{3}}{\epsilon})^{\frac{1}{4}}$). The results have been used to design the LES and DNS numerical experiments performed with Nek5000. The mesh DNS mesh has been designed so that the distance between GLL points is smaller than min($\frac{\lambda}{2}$,$\eta$).
 
-An Elliptic Blending Reynold's stress model\cite{manceau2002} has been used, the following set of coupled equations has been solved : 
+An Elliptic Blending Reynold's Stress Model\cite{manceau2002} has been used, the following set of coupled equations has been solved : 
 
 %\begin{equation}
 %  \frac{\partial R_{ij}}{\partial t} + u_{k}\frac{\partial R_{ij}}{\partial x_{k}} = d_{ij} + P_{ij} + G_{ij} + \Phi_{ij} - \epsilon_{ij}
@@ -173,8 +173,8 @@ An Elliptic Blending Reynold's stress model\cite{manceau2002} has been used, the
 \end{split}
 \end{equation}
 
-The main idea of the EBRSM is to get the correct wall assymptotic behavior for the pressure correlation term $\underline{\underline{\Phi}}$ and represent the blocking of the wall normal fluctuations. This model is based on the Durbin's blending approcach
-The elliptic blending functions $f_{\Phi}$ and $f_{\epsilon}$ have been set equal to $\alpha^{3}$, which are the default values in Code\_Saturne.
+The main idea of the EBRSM, based on the Durbin's blending approach, is to get the correct wall assymptotic behavior for the pressure correlation term $\underline{\underline{\Phi}}$ and represent the blocking of the wall normal fluctuations.
+The elliptic blending functions $f_{\Phi}$ and $f_{\epsilon}$\cite{manceau2015} have been set equal to $\alpha^{3}$, which are the default values in Code\_Saturne.
 
 
 %\begin{equation}
@@ -211,7 +211,17 @@ The elliptic blending factor,$\alpha$ is solution of the following elliptic equa
 \end{equation}
 and $n_{i} = \frac{(\nabla \alpha)_{i}}{||(\underline{\nabla} \alpha)||}$, the unit normal of the $\alpha$ gradient
 
-This the EBRSM is a near wall model, $y^{+} = 0.5$ and $x^{+} = 3.5$ have been targeted and checked a posteriori.
+This the EBRSM is a near wall model, $y^{+} = 0.5$ and $x^{+} = 3.5$ have consequently been targeted and checked a posteriori. A 3D mesh composed of hexahedral elements has been created with the mesh generator Gmsh and extruded over a single layer. Periodicity conditions has been et in the steam-wise direction and a local pressure gradient used to ensure a constant bulk velocity during the simulation. The physical quantities have been averaged after convergence to get rid of potential numerical fluctuations.
+A space centered scheme and a second order time stepper has been used. the set of 6 $R_{ij}$ equations have been solved with the coupled solver in Code\_Saturne.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[height = 50mm]{./Figures/ss_thimble/ss_thimble_mesh.png}
+    \caption{2D periodic mesh used with Code\_Saturne.}
+  \end{center}
+\end{figure}
+
+
 
 
 
@@ -223,7 +233,21 @@ The LES simulations have been performed with the high-order spectral element cod
 
 \subsection{Computational domain and physical conditions}
 
+Courant?Friedrichs?Lewy (CFL) condition of 0.5 have been targeted with an adaptative timestepper before starting averaging and and getting fully developed turbulence in the domain. Then a constant timestep ensuring CFL $\sim$ 0.5 has been used for the time averaging. 
+In order to fasten the averaging process of the physical quantities, one may spatially average the turbulent quantities over the stream-wise direction, which is a direction of homogeneity. The domain is invariant by $\frac{\pi}{2}$ rotations and the resulting quarter domains have one symmetry plane. One can spatially average over $\frac{1}{8}$ section.
+
 \subsection{Mesh characteristics and mesh convergence study}
+
+The LES mesh consists of 1 \ 038 \ 880  curvilinear hexahedral elements and the polynomial order has been set to 8, thus 531 \ 906 \ 560 gridpoints have been used for the simulation. The mesh have been design with a target dimensionless wall distance : $y^{+} = \frac{\Delta y u_{*}}{\nu} = 0.5$, with $\Delta$ y the distance from the first GLL point to the wall and $u_{*}$ the friction velocity. The orthoradial ($x^{+}$) and streamwise ($z^{+}$) dimensionless wall distance have been set to 3.5 and 10 respectively.
+The open source mesh generator Gmsh has been used to generate the hexahedral elements, the GLL points have been generated with Nek5000.
+
+%\begin{figure}
+%  \begin{center}
+%    \includegraphics[height = 50mm]{./Figures/ss_thimble/ss_thimble_mesh.png}
+%    \caption{.}
+%  \end{center}
+%\end{figure}
+
 
 \subsection{Results}
 
@@ -232,7 +256,71 @@ The LES simulations have been performed with the high-order spectral element cod
 
 \subsection{Mesh characteristics}
 
+
+
 \subsection{Results}
+
+[Some results with Code\_Saturne]
+
+\begin{figure}
+\begin{minipage}{0.50\linewidth}
+  \begin{center}
+    \includegraphics[height = 50mm]{./Figures/ss_thimble/cs_ss_thimble_kolmogorov_mean.png}
+    \caption{Kolmogorov length scale (left) and Taylor microscale (right).}
+  \end{center}
+\end{minipage}\hfill
+\begin{minipage}{0.50\linewidth}
+   \begin{center}
+    \includegraphics[height = 50mm]{./Figures/ss_thimble/ss_thimble_taylor_mean.png}
+    %\caption{Taylor microscale}
+   \end{center}
+\end{minipage}
+\end{figure}
+
+
+
+\begin{figure}
+\begin{minipage}{0.5\linewidth}
+  \begin{center}
+    \includegraphics[height = 40mm]{./Figures/cs_lumley1.pdf}
+    %\caption{Kolmogorov length scale (left) and Taylor microscale (right).}
+  \end{center}
+\end{minipage}\hfill
+\begin{minipage}{0.5\linewidth}
+   \begin{center}
+    \includegraphics[height = 40mm]{./Figures/cs_lumley2.pdf}
+   \end{center}
+\end{minipage}
+\end{figure}
+
+\begin{figure}
+\begin{minipage}{0.5\linewidth}
+  \begin{center}
+    \includegraphics[height = 40mm]{./Figures/cs_lumley3.pdf}
+    %\caption{Kolmogorov length scale (left) and Taylor microscale (right).}
+  \end{center}
+\end{minipage}\hfill
+\begin{minipage}{0.5\linewidth}
+   \begin{center}
+    \includegraphics[height = 40mm]{./Figures/cs_lumley4.pdf}
+   \end{center}
+\end{minipage}
+\end{figure}
+
+\begin{figure}
+\begin{minipage}{0.5\linewidth}
+  \begin{center}
+    \includegraphics[height = 40mm]{./Figures/cs_lumley5.pdf}
+    %\caption{Kolmogorov length scale (left) and Taylor microscale (right).}
+  \end{center}
+\end{minipage}\hfill
+\begin{minipage}{0.5\linewidth}
+\end{minipage}
+\end{figure}
+
+
+
+
 
 \section{DISCUSSION}
 \label{discussion}
